@@ -1,33 +1,26 @@
-function t = exercicio1(func,x0)
+function t = exercicio1(func,func_d,x0)
 
 % nao alterar: inicio
-es = 1;
+es = 0.01;
 imax = 20;
 % nao alterar: fim
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  t = x0;   % chute inicial
+t = zeros(imax, 1);
+t(1) = x0;
+erro = zeros(imax, 1);
 
-  for i = 1:imax
-    fval = func(t);
-    dval = func_d(t);
-
-    if abs(dval) < 1e-12
-      warning('Derivada muito pequena, método parou.');
-      return;
-    end
-
-    t_new = t - fval/dval;
-
-    % critério de parada (erro relativo)
-    if abs((t_new - t)/max(1,abs(t_new))) < es
-      t = t_new;
-      return;
-    end
-
-    t = t_new;
-  endfor
+for ii = 1:length(t)-1 %usar ii e n i pq i eh imaginarium
+  if ii ~= 1
+    erro(ii) = abs(t(ii) - t(ii-1))/t(ii); %abs é modulo
+    if erro(ii) < es
+      break
+    endif
+  endif
+  t(ii+1) = t(ii) - func(t(ii))/func_d(t(ii)); %; faz sumir
+endfor
+t = t(ii); % alterar
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
