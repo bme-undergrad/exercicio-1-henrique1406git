@@ -7,46 +7,45 @@ imax = 20;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% ANOTAÇÃO: O tamanho do vetor 't' deve ser baseado em imax para evitar erros.
-% Usamos imax+1 para ter espaço para o valor inicial (x0) e mais imax iterações.
+% ANOTAÇÃO: Pre-alocamos espaço para o caso máximo.
+% +1 para incluir o valor inicial x0.
 t = zeros(imax + 1, 1);
-erro = zeros(imax, 1);
 
-% ANOTAÇÃO: Erro #2 corrigido.
-% Usar o x0 fornecido como ponto de partida, em vez de um valor fixo.
-t(1) = x0;;
+% Ponto de partida é o x0 fornecido.
+t(1) = x0;
 
-% Inicializa uma variável para o número de iterações.
+% Inicializamos o contador de iterações realizadas.
 num_iteracoes = 0;
 
-% ANOTAÇÃO: Erro #3 corrigido.
-% O loop deve ir de 1 até o número máximo de iterações (imax).
+% O loop vai de 1 até o máximo de iterações.
 for ii = 1:imax
-    % Calcula o próximo valor de t usando a fórmula de Newton
-    t(ii+1) = t(ii) - func(t(ii))/func_d(t(ii));
-    num_iteracoes = ii; % Atualiza o contador de iterações
-
-    % Calcula o erro relativo percentual
-    % Evita divisão por zero se o novo valor for 0
-    if t(ii+1) ~= 0
-        erro(ii) = abs((t(ii+1) - t(ii)) / t(ii+1));
-    else
-        erro(ii) = abs(t(ii+1) - t(ii)); % Usa erro absoluto se t(ii+1) for 0
+    % ANOTAÇÃO: Adicionamos uma verificação de segurança.
+    % Se a derivada for zero, o método para. Evita divisão por zero.
+    derivada = func_d(t(ii));
+    if derivada == 0
+        disp('Derivada igual a zero. O método não pode continuar.');
+        break;
     end
 
-    % Verifica o critério de parada (erro menor que o especificado)
-    if erro(ii) < es
-        break; % Se o erro for pequeno o suficiente, para o loop.
+    % Fórmula de Newton-Raphson
+    t(ii+1) = t(ii) - func(t(ii)) / derivada;
+    num_iteracoes = ii; % Atualiza o número de iterações concluídas.
+
+    % Critério de parada pelo erro relativo.
+    if t(ii+1) ~= 0
+        erro = abs((t(ii+1) - t(ii)) / t(ii+1));
+        if erro < es
+            break; % Para o loop se a convergência for atingida.
+        end
     end
 endfor
 
-
-% ANOTAÇÃO: Erro #1 corrigido.
-% A função deve retornar o resultado calculado, e não um valor fixo.
-t = resultado;
+% ANOTAÇÃO: ESTA É A MUDANÇA MAIS IMPORTANTE!
+% Em vez de retornar um único número, vamos retornar o vetor t
+% com todas as aproximações calculadas, sem os zeros extras.
+% O vetor vai de t(1) até a última posição calculada, t(num_iteracoes + 1).
+t = t(1:(num_iteracoes + 1));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 endfunction
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%
