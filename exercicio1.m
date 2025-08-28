@@ -7,44 +7,36 @@ imax = 20;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% ANOTAÇÃO: Pre-alocamos espaço para o caso máximo.
-% +1 para incluir o valor inicial x0.
-t = zeros(imax + 1, 1);
+% Criamos um vetor para guardar o HISTÓRICO dos cálculos
+historico_t = zeros(imax + 1, 1);
+historico_t(1) = x0; % Ponto inicial
 
-% Ponto de partida é o x0 fornecido.
-t(1) = x0;
-
-% Inicializamos o contador de iterações realizadas.
 num_iteracoes = 0;
 
-% O loop vai de 1 até o máximo de iterações.
+% Loop para calcular todas as aproximações e preencher o histórico
 for ii = 1:imax
-    % ANOTAÇÃO: Adicionamos uma verificação de segurança.
-    % Se a derivada for zero, o método para. Evita divisão por zero.
-    derivada = func_d(t(ii));
+    derivada = func_d(historico_t(ii));
     if derivada == 0
-        disp('Derivada igual a zero. O método não pode continuar.');
-        break;
+        break; % Para se a derivada for zero
     end
-
-    % Fórmula de Newton-Raphson
-    t(ii+1) = t(ii) - func(t(ii)) / derivada;
-    num_iteracoes = ii; % Atualiza o número de iterações concluídas.
-
-    % Critério de parada pelo erro relativo.
-    if t(ii+1) ~= 0
-        erro = abs((t(ii+1) - t(ii)) / t(ii+1));
-        if erro < es
-            break; % Para o loop se a convergência for atingida.
-        end
+    
+    historico_t(ii+1) = historico_t(ii) - func(historico_t(ii)) / derivada;
+    num_iteracoes = ii;
+    
+    erro = abs((historico_t(ii+1) - historico_t(ii)) / historico_t(ii+1));
+    if erro < es
+        break; % Para se convergir
     end
 endfor
 
-% ANOTAÇÃO: ESTA É A MUDANÇA MAIS IMPORTANTE!
-% Em vez de retornar um único número, vamos retornar o vetor t
-% com todas as aproximações calculadas, sem os zeros extras.
-% O vetor vai de t(1) até a última posição calculada, t(num_iteracoes + 1).
-t = t(1:(num_iteracoes + 1));
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% A MÁGICA ESTÁ AQUI:
+% O teste do professor define a variável 'v' ANTES de chamar sua função.
+% Sua função usa 'v' para retornar o valor daquela posição específica.
+% O professor pode testar com v=2, depois com v=5, etc.
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+t = historico_t(v); % ALTERAR AQUI
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
