@@ -9,33 +9,35 @@ es = 0.01;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% ANOTAÇÃO: Implementando o MÉTODO DA SECANTE MODIFICADA
-% porque o teste não fornece uma função derivada (passa 0),
-% o que impossibilita usar o Método de Newton puro.
+% ANOTAÇÃO: MÉTODO DA SECANTE MODIFICADA (VERSÃO ROBUSTA)
+% A correção crucial está no cálculo da derivada aproximada.
 
-% Delta (δ) para a aproximação da derivada. É um valor pequeno.
-delta = 0.0001;
 t_antigo = x0;
+t_novo = 0;
+
+% Usamos um passo de perturbação (h) pequeno e FIXO.
+% Isso evita instabilidade numérica quando 't' está perto de zero.
+h = 0.00001;
 
 for ii = 1:imax
-    % Avalia a função no ponto atual
     f_t = func(t_antigo);
     
-    % Avalia a função no ponto ligeiramente perturbado
-    f_t_delta = func(t_antigo + delta * t_antigo);
+    % ANOTAÇÃO: Esta é a mudança chave.
+    % Aproximamos a derivada usando o passo fixo 'h'.
+    % A fórmula é a definição de derivada: f'(x) ≈ (f(x+h) - f(x)) / h
+    derivada_aprox = (func(t_antigo + h) - f_t) / h;
     
-    % Calcula a aproximação da derivada
-    derivada_aprox = (f_t_delta - f_t) / (delta * t_antigo);
-    
-    % Proteção contra divisão por zero se a derivada aproximada for nula
-    if derivada_aprox == 0
+    % Proteção contra divisão por zero
+    if abs(derivada_aprox) < 1e-15 % Usar uma tolerância pequena em vez de '== 0'
+        disp('Derivada próxima de zero, parando.');
+        t_novo = t_antigo; % Retorna o último valor válido
         break;
     end
     
-    % Fórmula da iteração (idêntica à de Newton, mas com a derivada aproximada)
+    % Fórmula de iteração de Newton, usando nossa derivada aproximada
     t_novo = t_antigo - f_t / derivada_aprox;
     
-    % Calcula o erro relativo e verifica o critério de parada
+    % Critério de parada pelo erro relativo
     if t_novo ~= 0
         erro = abs((t_novo - t_antigo) / t_novo);
         if erro < es
@@ -43,11 +45,9 @@ for ii = 1:imax
         end
     end
     
-    % Atualiza o valor para a próxima iteração
     t_antigo = t_novo;
 endfor
 
-% A função retorna o último valor calculado
 t = t_novo;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
