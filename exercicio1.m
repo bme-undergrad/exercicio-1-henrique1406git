@@ -7,11 +7,11 @@ imax = 20;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-t = x0;   % começa no chute inicial
+  t = x0;   % chute inicial
 
   for i = 1:imax
-    fval  = func(t);
-    dval  = func_d(t);
+    fval = func(t);
+    dval = func_d(t);
 
     if abs(dval) < 1e-12
       warning('Derivada muito pequena, método parou.');
@@ -20,13 +20,13 @@ t = x0;   % começa no chute inicial
 
     t_new = t - fval/dval;
 
-    % critério de parada (erro relativo percentual)
+    % critério de parada (erro relativo)
     if abs((t_new - t)/max(1,abs(t_new))) < es
       t = t_new;
       return;
     end
 
-    t = t_new
+    t = t_new;
   endfor
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
