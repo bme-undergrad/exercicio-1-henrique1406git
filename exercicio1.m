@@ -20,7 +20,7 @@ for ii = 1:length(t)-1 %usar ii e n i pq i eh imaginarium
   endif
   t(ii+1) = t(ii) - func(t(ii))/func_d(t(ii)); %; faz sumir
 endfor
-t = t(ii); % alterar0
+t = t(ii); % alterar
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
